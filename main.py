@@ -77,14 +77,17 @@ class Main:
             session = self.create_session(token, self.get_cookie())
             response = session.get('https://discord.com/api/v9/users/@me/library')
             if response.status_code == 200:
-                Logging.info('Token \x1b[38;5;33m%s\x1b[0m\x1b[1m is \x1b[38;5;33mvalid\x1b[0m\x1b[1m.' % self.get_token_id(token))
-                self.checked.append(token)
+                Logging.info('Token \x1b[38;5;33m%s\x1b[0m\x1b[1m is \x1b[38;5;33mvalid\x1b[0m\x1b[1m. Valid: %s | Invalid: %s | Left: %s' % (self.get_token_id(token), len(self.valid), len(self.invalid), self.total))
+                self.valid.append(token)
             elif response.status_code == 401:
-                Logging.error('Token \x1b[38;5;9m%s\x1b[0m\x1b[1m is \x1b[38;5;9minvalid\x1b[0m\x1b[1m.' % self.get_token_id(token))
+                Logging.error('Token \x1b[38;5;9m%s\x1b[0m\x1b[1m is \x1b[38;5;9minvalid\x1b[0m\x1b[1m. Valid: %s | Invalid: %s | Left: %s' % (self.get_token_id(token), len(self.valid), len(self.invalid), self.total))
+                self.invalid.append(token)
             elif response.status_code == 403:
-                Logging.error('Token \x1b[38;5;9m%s\x1b[0m\x1b[1m is \x1b[38;5;9mlocked\x1b[0m\x1b[1m.' % self.get_token_id(token))
+                Logging.error('Token \x1b[38;5;9m%s\x1b[0m\x1b[1m is \x1b[38;5;9mlocked\x1b[0m\x1b[1m. Valid: %s | Invalid: %s | Left: %s' % (self.get_token_id(token), len(self.valid), len(self.invalid), self.total))
+                self.locked.append(token)
             else:
                 Logging.error('Unrecognized response: \x1b[38;5;9m%s\x1b[0m\x1b[1m.' % response.json())
+            self.total -= 1
         except:
             self.login(token, attempts + 1)
 
@@ -93,20 +96,23 @@ class Main:
             while True:
                 self.cls()
                 print('\n\t\x1b[1m\x1b[38;5;33m[\x1b[0m\x1b[1m0\x1b[38;5;33m]\x1b[0m\x1b[1m Remove Bad Tokens')
-                option = input('\n\tOption\x1b[38;5;33m:\x1b[0m\x1b[1m ')
+                option = input('\n\tOption\x1b[38;5;33m >\x1b[0m\x1b[1m ')
                 print()
                 if option == '0':
-                    self.checked = []
+                    self.valid = []
+                    self.invalid = []
+                    self.locked = []
+                    self.total = len(self.tokens)
                     tasks = [executor.submit(self.login, self.get_token()) for _ in range(len(self.tokens))]
                     for _ in tasks:
-                        for task in concurrent.futures.as_completed(tasks):
+                        for _ in concurrent.futures.as_completed(tasks):
                             pass
-                    if len(self.checked):
+                    if len(self.valid):
                         open('tokens.txt', 'w').close()
                         with open('tokens.txt', 'a') as file:
-                            for token in self.checked:
+                            for token in self.valid:
                                 file.write('%s\n' % token)
-                        print('\n\t\x1b[1mSaved \x1b[38;5;33m%s\x1b[0m\x1b[1m valid tokens.' % len(self.checked))
+                        print('\n\t\x1b[1mSaved \x1b[38;5;33m%s\x1b[0m\x1b[1m valid tokens.' % len(self.valid))
                         input('\tPress \x1b[38;5;33mEnter\x1b[0m\x1b[1m to continue.')
                     else:
                         print('\n\t\x1b[1mNo valid tokens found.')

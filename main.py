@@ -77,13 +77,13 @@ class Main:
             session = self.create_session(token, self.get_cookie())
             response = session.get('https://discord.com/api/v9/users/@me/library')
             if response.status_code == 200:
-                Logging.info('Token \x1b[38;5;33m%s\x1b[0m\x1b[1m is \x1b[38;5;33mvalid\x1b[0m\x1b[1m. Valid: %s | Invalid: %s | Left: %s' % (self.get_token_id(token), len(self.valid), len(self.invalid), self.total))
+                Logging.info('Token \x1b[38;5;33m%s\x1b[0m\x1b[1m is \x1b[38;5;33mvalid\x1b[0m\x1b[1m. Valid: \x1b[38;5;33m%s\x1b[0m\x1b[1m | Invalid: \x1b[38;5;33m%s\x1b[0m\x1b[1m | Locked: \x1b[38;5;33m%s\x1b[0m\x1b[1m | Left: \x1b[38;5;33m%s\x1b[0m\x1b[1m' % (self.get_token_id(token), len(self.valid), len(self.invalid), len(self.locked), self.total))
                 self.valid.append(token)
             elif response.status_code == 401:
-                Logging.error('Token \x1b[38;5;9m%s\x1b[0m\x1b[1m is \x1b[38;5;9minvalid\x1b[0m\x1b[1m. Valid: %s | Invalid: %s | Left: %s' % (self.get_token_id(token), len(self.valid), len(self.invalid), self.total))
+                Logging.error('Token \x1b[38;5;9m%s\x1b[0m\x1b[1m is \x1b[38;5;9minvalid\x1b[0m\x1b[1m. Valid: \x1b[38;5;33m%s\x1b[0m\x1b[1m | Invalid: \x1b[38;5;33m%s\x1b[0m\x1b[1m | Locked: \x1b[38;5;33m%s\x1b[0m\x1b[1m | Left: \x1b[38;5;33m%s\x1b[0m\x1b[1m' % (self.get_token_id(token), len(self.valid), len(self.invalid), len(self.locked), self.total))
                 self.invalid.append(token)
             elif response.status_code == 403:
-                Logging.error('Token \x1b[38;5;9m%s\x1b[0m\x1b[1m is \x1b[38;5;9mlocked\x1b[0m\x1b[1m. Valid: %s | Invalid: %s | Left: %s' % (self.get_token_id(token), len(self.valid), len(self.invalid), self.total))
+                Logging.error('Token \x1b[38;5;9m%s\x1b[0m\x1b[1m is \x1b[38;5;9mlocked\x1b[0m\x1b[1m. Valid: \x1b[38;5;33m%s\x1b[0m\x1b[1m | Invalid: \x1b[38;5;33m%s\x1b[0m\x1b[1m | Locked: \x1b[38;5;33m%s\x1b[0m\x1b[1m | Left: \x1b[38;5;33m%s\x1b[0m\x1b[1m' % (self.get_token_id(token), len(self.valid), len(self.invalid), len(self.locked), self.total))
                 self.locked.append(token)
             else:
                 Logging.error('Unrecognized response: \x1b[38;5;9m%s\x1b[0m\x1b[1m.' % response.json())

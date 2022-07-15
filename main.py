@@ -13,11 +13,11 @@ class Logging:
 class Main:
     def __init__(self):
         self.tokens = []
-        with open('tokens.txt', 'r') as file:
+        with open('tokens.txt', 'r', encoding = 'UTF-8') as file:
             for _ in file:
                 self.tokens.append(_.strip())
         self.proxies = []
-        with open('proxies.txt', 'r') as file:
+        with open('proxies.txt', 'r', encoding = 'UTF-8') as file:
             for _ in file:
                 self.proxies.append(_.strip())
         self.token_pool = itertools.cycle(self.tokens)
@@ -108,8 +108,8 @@ class Main:
                         for _ in concurrent.futures.as_completed(tasks):
                             pass
                     if len(self.valid):
-                        open('tokens.txt', 'w').close()
-                        with open('tokens.txt', 'a') as file:
+                        open('tokens.txt', 'w', encoding = 'UTF-8').close()
+                        with open('tokens.txt', 'a', encoding = 'UTF-8') as file:
                             for token in self.valid:
                                 file.write('%s\n' % token)
                         print('\n\t\x1b[1mSaved \x1b[38;5;33m%s\x1b[0m\x1b[1m valid tokens.' % len(self.valid))

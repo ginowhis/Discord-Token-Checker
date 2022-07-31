@@ -1,5 +1,5 @@
 ### Features:
-- Thread Support
+[x] Thread Support
 - Proxy Support
 
 ### Showcase:

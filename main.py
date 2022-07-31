@@ -57,7 +57,7 @@ class Main:
             'accept-encoding': 'application/json',
             'accept-language': 'en-US,en;q=0.9',
             'content-type': 'application/json',
-            'cookie': '__dcfduid=%s; __sdcfduid=%s; locale=en-US' % (cookie),
+            'cookie': '__dcfduid=%s; __sdcfduid=%s; locale=en-US' % cookie,
             'origin': 'https://discord.com',
             'referer': 'https://discord.com/',
             'sec-fetch-dest': 'empty',

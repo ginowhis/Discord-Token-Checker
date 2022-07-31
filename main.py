@@ -22,6 +22,7 @@ class Main:
                 self.proxies.append(_.strip())
         self.token_pool = itertools.cycle(self.tokens)
         self.proxy_pool = itertools.cycle(self.proxies)
+        self.exit = lambda: os._exit(0)
         if sys.platform == 'win32':
             self.cls = lambda: os.system('cls')
         else:
@@ -77,14 +78,14 @@ class Main:
             session = self.create_session(token, self.get_cookie())
             response = session.get('https://discord.com/api/v9/users/@me/library')
             if response.status_code == 200:
-                Logging.info('Token \x1b[38;5;33m%s\x1b[0m\x1b[1m is \x1b[38;5;33mvalid\x1b[0m\x1b[1m. Valid: \x1b[38;5;33m%s\x1b[0m\x1b[1m | Invalid: \x1b[38;5;33m%s\x1b[0m\x1b[1m | Locked: \x1b[38;5;33m%s\x1b[0m\x1b[1m | Left: \x1b[38;5;33m%s\x1b[0m\x1b[1m' % (self.get_token_id(token), len(self.valid), len(self.invalid), len(self.locked), self.total))
                 self.valid.append(token)
+                Logging.info('Token \x1b[38;5;33m%s\x1b[0m\x1b[1m is \x1b[38;5;33mvalid\x1b[0m\x1b[1m. Valid: \x1b[38;5;33m%s\x1b[0m\x1b[1m | Invalid: \x1b[38;5;33m%s\x1b[0m\x1b[1m | Locked: \x1b[38;5;33m%s\x1b[0m\x1b[1m | Left: \x1b[38;5;33m%s\x1b[0m\x1b[1m' % (self.get_token_id(token), len(self.valid), self.invalid, self.locked, self.total))
             elif response.status_code == 401:
-                Logging.error('Token \x1b[38;5;9m%s\x1b[0m\x1b[1m is \x1b[38;5;9minvalid\x1b[0m\x1b[1m. Valid: \x1b[38;5;9m%s\x1b[0m\x1b[1m | Invalid: \x1b[38;5;9m%s\x1b[0m\x1b[1m | Locked: \x1b[38;5;9m%s\x1b[0m\x1b[1m | Left: \x1b[38;5;9m%s\x1b[0m\x1b[1m' % (self.get_token_id(token), len(self.valid), len(self.invalid), len(self.locked), self.total))
-                self.invalid.append(token)
+                self.invalid += 1
+                Logging.error('Token \x1b[38;5;9m%s\x1b[0m\x1b[1m is \x1b[38;5;9minvalid\x1b[0m\x1b[1m. Valid: \x1b[38;5;9m%s\x1b[0m\x1b[1m | Invalid: \x1b[38;5;9m%s\x1b[0m\x1b[1m | Locked: \x1b[38;5;9m%s\x1b[0m\x1b[1m | Left: \x1b[38;5;9m%s\x1b[0m\x1b[1m' % (self.get_token_id(token), len(self.valid), self.invalid, self.locked, self.total))
             elif response.status_code == 403:
-                Logging.error('Token \x1b[38;5;9m%s\x1b[0m\x1b[1m is \x1b[38;5;9mlocked\x1b[0m\x1b[1m. Valid: \x1b[38;5;9m%s\x1b[0m\x1b[1m | Invalid: \x1b[38;5;9m%s\x1b[0m\x1b[1m | Locked: \x1b[38;5;9m%s\x1b[0m\x1b[1m | Left: \x1b[38;5;9m%s\x1b[0m\x1b[1m' % (self.get_token_id(token), len(self.valid), len(self.invalid), len(self.locked), self.total))
-                self.locked.append(token)
+                self.locked += 1
+                Logging.error('Token \x1b[38;5;9m%s\x1b[0m\x1b[1m is \x1b[38;5;9mlocked\x1b[0m\x1b[1m. Valid: \x1b[38;5;9m%s\x1b[0m\x1b[1m | Invalid: \x1b[38;5;9m%s\x1b[0m\x1b[1m | Locked: \x1b[38;5;9m%s\x1b[0m\x1b[1m | Left: \x1b[38;5;9m%s\x1b[0m\x1b[1m' % (self.get_token_id(token), len(self.valid), self.invalid, self.locked, self.total))
             else:
                 Logging.error('Unrecognized response: \x1b[38;5;9m%s\x1b[0m\x1b[1m.' % response.json())
             self.total -= 1
@@ -96,12 +97,12 @@ class Main:
             while True:
                 self.cls()
                 print('\n\t\x1b[1m\x1b[38;5;33m[\x1b[0m\x1b[1m0\x1b[38;5;33m]\x1b[0m\x1b[1m Remove Bad Tokens')
-                option = input('\n\tOption\x1b[38;5;33m >\x1b[0m\x1b[1m ')
+                option = int(input('\n\tOption\x1b[38;5;33m >\x1b[0m\x1b[1m '))
                 print()
-                if option == '0':
+                if option == 0:
                     self.valid = []
-                    self.invalid = []
-                    self.locked = []
+                    self.invalid = 0
+                    self.locked = 0
                     self.total = len(self.tokens)
                     tasks = [executor.submit(self.login, self.get_token()) for _ in range(len(self.tokens))]
                     for _ in tasks:
@@ -113,10 +114,14 @@ class Main:
                             for token in self.valid:
                                 file.write('%s\n' % token)
                         print('\n\t\x1b[1mSaved \x1b[38;5;33m%s\x1b[0m\x1b[1m valid tokens.' % len(self.valid))
-                        input('\tPress \x1b[38;5;33mEnter\x1b[0m\x1b[1m to continue.')
+                        input('\tPress \x1b[38;5;33mEnter\x1b[0m\x1b[1m to exit.')
+                        self.cls()
+                        self.exit()
                     else:
                         print('\n\t\x1b[1mNo valid tokens found.')
-                        input('\tPress \x1b[38;5;33mEnter\x1b[0m\x1b[1m to continue.')
+                        input('\tPress \x1b[38;5;33mEnter\x1b[0m\x1b[1m to exit.')
+                        self.cls()
+                        self.exit()
 
 if __name__ == '__main__':
     Main().run()

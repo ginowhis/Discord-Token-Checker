@@ -1,4 +1,4 @@
-> Works as of July 31, 2022
+> Works as of August 2, 2022
 
 ### Features:
 - [x] Thread Support

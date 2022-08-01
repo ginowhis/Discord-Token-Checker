@@ -12,21 +12,37 @@ class Logging:
 
 class Main:
     def __init__(self):
+        self.exit = lambda: os._exit(0)
         self.tokens = []
-        with open('tokens.txt', 'r', encoding = 'UTF-8') as file:
-            for _ in file:
-                self.tokens.append(_.strip())
         self.proxies = []
-        with open('proxies.txt', 'r', encoding = 'UTF-8') as file:
-            for _ in file:
-                self.proxies.append(_.strip())
+        try:
+            with open('tokens.txt', 'r', encoding = 'UTF-8') as file:
+                if os.stat('tokens.txt').st_size != 0:
+                    for _ in file:
+                        self.tokens.append(_.strip())
+                else:
+                    Logging.error('File tokens.txt is empty.')
+                    self._exit()
+            with open('proxies.txt', 'r', encoding = 'UTF-8') as file:
+                if os.stat('proxies.txt').st_size != 0:
+                    for _ in file:
+                        self.proxies.append(_.strip())
+                else:
+                    Logging.error('File proxies.txt is empty.')
+                    self._exit()
+        except:
+            open('tokens.txt', 'w+').close()
+            open('proxies.txt', 'w+').close()
         self.token_pool = itertools.cycle(self.tokens)
         self.proxy_pool = itertools.cycle(self.proxies)
-        self.exit = lambda: os._exit(0)
         if sys.platform == 'win32':
             self.cls = lambda: os.system('cls')
         else:
             self.cls = lambda: os.system('clear')
+
+    def _exit(self):
+        input('\t\x1b[1mPress \x1b[38;5;33mEnter\x1b[0m\x1b[1m to exit.')
+        os._exit(0)
 
     def get_token(self):
         while True:
@@ -44,12 +60,10 @@ class Main:
         except:
             return '0' * 18
 
-    def get_cookie(self):
+    def create_session(self, token):
         response = requests.Session().get('https://discord.com/app')
         cookie = str(response.cookies)
-        return cookie.split('dcfduid=')[1].split(';')[0], cookie.split('sdcfduid=')[1].split(';')[0]
-
-    def create_session(self, token, cookie):
+        cookie = cookie.split('dcfduid=')[1].split(';')[0], cookie.split('sdcfduid=')[1].split(';')[0]
         session = requests.Session()
         session.proxies.update(self.get_proxy())
         session.headers.update({
@@ -75,7 +89,7 @@ class Main:
         if attempts == 5:
             return
         try:
-            session = self.create_session(token, self.get_cookie())
+            session = self.create_session(token)
             response = session.get('https://discord.com/api/v9/users/@me/library')
             if response.status_code == 200:
                 self.valid.append(token)
@@ -96,10 +110,10 @@ class Main:
         with concurrent.futures.ThreadPoolExecutor(max_workers = 10000) as executor:
             while True:
                 self.cls()
-                print('\n\t\x1b[1m\x1b[38;5;33m[\x1b[0m\x1b[1m0\x1b[38;5;33m]\x1b[0m\x1b[1m Remove Bad Tokens')
+                print('\n\t\x1b[1m\x1b[38;5;33m[\x1b[0m\x1b[1m1\x1b[38;5;33m]\x1b[0m\x1b[1m Remove Bad Tokens')
                 option = int(input('\n\tOption\x1b[38;5;33m >\x1b[0m\x1b[1m '))
                 print()
-                if option == 0:
+                if option == 1:
                     self.valid = []
                     self.invalid = 0
                     self.locked = 0
@@ -114,14 +128,10 @@ class Main:
                             for token in self.valid:
                                 file.write('%s\n' % token)
                         print('\n\t\x1b[1mSaved \x1b[38;5;33m%s\x1b[0m\x1b[1m valid tokens.' % len(self.valid))
-                        input('\tPress \x1b[38;5;33mEnter\x1b[0m\x1b[1m to exit.')
-                        self.cls()
-                        self.exit()
+                        self._exit()
                     else:
                         print('\n\t\x1b[1mNo valid tokens found.')
-                        input('\tPress \x1b[38;5;33mEnter\x1b[0m\x1b[1m to exit.')
-                        self.cls()
-                        self.exit()
+                        self._exit()
 
 if __name__ == '__main__':
     Main().run()

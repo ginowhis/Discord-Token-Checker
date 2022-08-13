@@ -12,7 +12,7 @@ class Logging:
 
 class Main:
     def __init__(self):
-        self.exit = lambda: os._exit(0)
+        # self.exit = lambda: os._exit(0)
         self.tokens = []
         self.proxies = []
         try:

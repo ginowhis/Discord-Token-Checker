@@ -1,4 +1,4 @@
-> Works as of August 2, 2022
+> Works as of August 16, 2022
 
 ### Features:
 - [x] Thread Support
@@ -8,4 +8,4 @@
 ![showcase](https://user-images.githubusercontent.com/109295864/179198370-9aee3b35-9a12-464a-94ab-ba8703aff022.gif)
 
 ### Discord:
-// vs#5519
+void;#5519

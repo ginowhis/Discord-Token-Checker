@@ -12,7 +12,6 @@ class Logging:
 
 class Main:
     def __init__(self):
-        # self.exit = lambda: os._exit(0)
         self.tokens = []
         self.proxies = []
         try:
@@ -60,6 +59,11 @@ class Main:
         except:
             return '0' * 18
 
+    def get_cookie(self):
+        response = requests.Session().get('https://discord.com/app')
+        cookie = str(response.cookies)
+        return cookie.split('dcfduid=')[1].split(';')[0], cookie.split('sdcfduid=')[1].split(';')[0]
+
     def create_session(self, token):
         response = requests.Session().get('https://discord.com/app')
         cookie = str(response.cookies)
@@ -72,7 +76,7 @@ class Main:
             'accept-encoding': 'application/json',
             'accept-language': 'en-US,en;q=0.9',
             'content-type': 'application/json',
-            'cookie': '__dcfduid=%s; __sdcfduid=%s; locale=en-US' % cookie,
+            'cookie': '__dcfduid=%s; __sdcfduid=%s; locale=en-US' % self.get_cookie(),
             'origin': 'https://discord.com',
             'referer': 'https://discord.com/',
             'sec-fetch-dest': 'empty',
@@ -91,6 +95,7 @@ class Main:
         try:
             session = self.create_session(token)
             response = session.get('https://discord.com/api/v9/users/@me/library')
+            self.total -= 1
             if response.status_code == 200:
                 self.valid.append(token)
                 Logging.info('Token \x1b[38;5;33m%s\x1b[0m\x1b[1m is \x1b[38;5;33mvalid\x1b[0m\x1b[1m. Valid: \x1b[38;5;33m%s\x1b[0m\x1b[1m | Invalid: \x1b[38;5;33m%s\x1b[0m\x1b[1m | Locked: \x1b[38;5;33m%s\x1b[0m\x1b[1m | Left: \x1b[38;5;33m%s\x1b[0m\x1b[1m' % (self.get_token_id(token), len(self.valid), self.invalid, self.locked, self.total))
@@ -102,7 +107,6 @@ class Main:
                 Logging.error('Token \x1b[38;5;9m%s\x1b[0m\x1b[1m is \x1b[38;5;9mlocked\x1b[0m\x1b[1m. Valid: \x1b[38;5;9m%s\x1b[0m\x1b[1m | Invalid: \x1b[38;5;9m%s\x1b[0m\x1b[1m | Locked: \x1b[38;5;9m%s\x1b[0m\x1b[1m | Left: \x1b[38;5;9m%s\x1b[0m\x1b[1m' % (self.get_token_id(token), len(self.valid), self.invalid, self.locked, self.total))
             else:
                 Logging.error('Unrecognized response: \x1b[38;5;9m%s\x1b[0m\x1b[1m.' % response.json())
-            self.total -= 1
         except:
             self.login(token, attempts + 1)
 

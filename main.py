@@ -65,9 +65,6 @@ class Main:
         return cookie.split('dcfduid=')[1].split(';')[0], cookie.split('sdcfduid=')[1].split(';')[0]
 
     def create_session(self, token):
-        response = requests.Session().get('https://discord.com/app')
-        cookie = str(response.cookies)
-        cookie = cookie.split('dcfduid=')[1].split(';')[0], cookie.split('sdcfduid=')[1].split(';')[0]
         session = requests.Session()
         session.proxies.update(self.get_proxy())
         session.headers.update({

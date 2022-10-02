@@ -17,15 +17,15 @@ class Main:
         try:
             with open('tokens.txt', 'r', encoding = 'UTF-8') as file:
                 if os.stat('tokens.txt').st_size != 0:
-                    for _ in file:
-                        self.tokens.append(_.strip())
+                    for _ in file.read().splitlines():
+                        self.tokens.append(_)
                 else:
                     Logging.error('File tokens.txt is empty.')
                     self._exit()
             with open('proxies.txt', 'r', encoding = 'UTF-8') as file:
                 if os.stat('proxies.txt').st_size != 0:
-                    for _ in file:
-                        self.proxies.append(_.strip())
+                    for _ in file.read().splitlines():
+                        self.proxies.append(_)
                 else:
                     Logging.error('File proxies.txt is empty.')
                     self._exit()
@@ -44,14 +44,12 @@ class Main:
         os._exit(0)
 
     def get_token(self):
-        while True:
-            token = next(self.token_pool)
-            return token
+        token = next(self.token_pool)
+        return token
 
     def get_proxy(self):
-        while True:
-            proxy = next(self.proxy_pool)
-            return {'https': 'http://%s' % proxy, 'http': 'http://%s' % proxy}
+        proxy = next(self.proxy_pool)
+        return {'https': 'http://%s' % proxy, 'http': 'http://%s' % proxy}
 
     def get_token_id(self, token):
         try:

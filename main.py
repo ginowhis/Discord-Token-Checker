@@ -49,7 +49,10 @@ class Main:
 
     def get_proxy(self):
         proxy = next(self.proxy_pool)
-        return {'https': 'http://%s' % proxy, 'http': 'http://%s' % proxy}
+        return {
+            'http': 'http://%s' % proxy,
+            'https': 'http://%s' % proxy
+        }
 
     def get_token_id(self, token):
         try:

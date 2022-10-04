@@ -44,8 +44,7 @@ class Main:
         os._exit(0)
 
     def get_token(self):
-        token = next(self.token_pool)
-        return token
+        return next(self.token_pool)
 
     def get_proxy(self):
         proxy = next(self.proxy_pool)
@@ -54,16 +53,21 @@ class Main:
             'https': 'http://%s' % proxy
         }
 
+    # Outdated for new token type
+
+    # def get_token_id(self, token):
+    #     try:
+    #         return base64.b64decode(token.split('.')[0].encode()).decode()
+    #     except:
+    #         return '0' * 18
+
     def get_token_id(self, token):
-        try:
-            return base64.b64decode(token.split('.')[0].encode()).decode()
-        except:
-            return '0' * 18
+        return token.split('.')[0]
 
     def get_cookie(self):
         response = requests.Session().get('https://discord.com/app')
         cookie = str(response.cookies)
-        return cookie.split('dcfduid=')[1].split(';')[0], cookie.split('sdcfduid=')[1].split(';')[0]
+        return cookie.split('dcfduid=')[1].split(' ')[0], cookie.split('sdcfduid=')[1].split(' ')[0], cookie.split('cfruid=')[1].split(' ')[0]
 
     def create_session(self, token):
         session = requests.Session()
@@ -74,7 +78,7 @@ class Main:
             'accept-encoding': 'application/json',
             'accept-language': 'en-US,en;q=0.9',
             'content-type': 'application/json',
-            'cookie': '__dcfduid=%s; __sdcfduid=%s; locale=en-US' % self.get_cookie(),
+            'cookie': '__dcfduid=%s; __sdcfduid=%s; locale=en-US; __cfruid=%s;' % self.get_cookie(),
             'origin': 'https://discord.com',
             'referer': 'https://discord.com/',
             'sec-fetch-dest': 'empty',

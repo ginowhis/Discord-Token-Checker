@@ -65,8 +65,7 @@ class Main:
         return token.split('.')[0]
 
     def get_cookie(self):
-        response = requests.Session().get('https://discord.com/app')
-        cookie = str(response.cookies)
+        cookie = str(requests.get('https://discord.com/app').cookies)
         return cookie.split('dcfduid=')[1].split(' ')[0], cookie.split('sdcfduid=')[1].split(' ')[0], cookie.split('cfruid=')[1].split(' ')[0]
 
     def create_session(self, token):

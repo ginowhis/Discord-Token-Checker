@@ -128,8 +128,7 @@ class Main:
                         for _ in concurrent.futures.as_completed(tasks):
                             pass
                     if len(self.valid):
-                        open('tokens.txt', 'w', encoding = 'UTF-8').close()
-                        with open('tokens.txt', 'a', encoding = 'UTF-8') as file:
+                        with open('tokens.txt', 'w', encoding = 'UTF-8') as file:
                             for token in self.valid:
                                 file.write('%s\n' % token)
                         print('\n\t\x1b[1mSaved \x1b[38;5;33m%s\x1b[0m\x1b[1m valid tokens.' % len(self.valid))
